@@ -95,6 +95,12 @@ impl fmt::Display for Error {
     }
 }
 impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Database(e) => Some(e),
+            Self::Panic(e) => Some(e),
+        }
+    }
 }
 
 
