@@ -12,7 +12,6 @@
 use std::fmt;
 use std::sync::Arc;
 
-use async_trait::async_trait;
 pub use bb8;
 pub use oracle;
 
@@ -103,8 +102,6 @@ impl std::error::Error for Error {
     }
 }
 
-
-#[async_trait]
 impl bb8::ManageConnection for OracleConnectionManager {
     type Connection = Arc<oracle::Connection>;
     type Error = Error;
