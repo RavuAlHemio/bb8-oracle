@@ -54,7 +54,7 @@ impl OracleConnectionManager {
     pub fn new<U: Into<String>, P: Into<String>, C: Into<String>>(username: U, password: P, connect_string: C) -> OracleConnectionManager {
         let connector = oracle::Connector::new(username, password, connect_string);
         OracleConnectionManager {
-            connector
+            connector,
         }
     }
 
