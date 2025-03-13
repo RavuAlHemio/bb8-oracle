@@ -51,13 +51,11 @@ impl OracleConnectionManager {
     /// # use bb8_oracle::OracleConnectionManager;
     /// let manager = OracleConnectionManager::new("user", "password", "localhost");
     /// ```
-    pub fn new<U: Into<String>, P: Into<String>, C: Into<String>>(
-        username: U,
-        password: P,
-        connect_string: C,
-    ) -> OracleConnectionManager {
+    pub fn new<U: Into<String>, P: Into<String>, C: Into<String>>(username: U, password: P, connect_string: C) -> OracleConnectionManager {
         let connector = oracle::Connector::new(username, password, connect_string);
-        OracleConnectionManager { connector }
+        OracleConnectionManager {
+            connector
+        }
     }
 
     /// Initialise the connection manager with the data needed to create new connections using `oracle::Connector`.
@@ -110,7 +108,9 @@ impl bb8::ManageConnection for OracleConnectionManager {
 
     async fn connect(&self) -> Result<Self::Connection, Self::Error> {
         let connector_clone = self.connector.clone();
-        let result = tokio::task::spawn_blocking(move || connector_clone.connect()).await;
+        let result = tokio::task::spawn_blocking(move || {
+            connector_clone.connect()
+        }).await;
         match result {
             Ok(Ok(c)) => Ok(Arc::new(c)),
             Ok(Err(e)) => Err(Error::Database(e)),
@@ -120,7 +120,9 @@ impl bb8::ManageConnection for OracleConnectionManager {
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
         let conn_clone = Arc::clone(&conn);
-        let result = tokio::task::spawn_blocking(move || conn_clone.ping()).await;
+        let result = tokio::task::spawn_blocking(move || {
+            conn_clone.ping()
+        }).await;
         match result {
             Ok(Ok(())) => Ok(()),
             Ok(Err(e)) => Err(Error::Database(e)),
